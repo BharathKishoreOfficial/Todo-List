@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="./signup.css"> -->
+    <title>Document</title>
+  </head>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap");
+
+    :root {
+      --ink: #2b2350;
+      --ink-dim: #7a7299;
+      --paper: rgba(255, 255, 255, 0.86);
+      --rose: #ff5d8f;
+      --sun: #ff8a5b;
+      --violet: #7b61ff;
+      --font:
+        "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: var(--font);
+      background: linear-gradient(
+        145deg,
+        #ffd9a8,
+        #ff9e7d 34%,
+        #ff6f9c 68%,
+        #8b6bff
+      );
+      background-size: 220% 220%;
+      animation: sky-shift 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes sky-shift {
+      from {
+        background-position: 0% 0%;
+      }
+      to {
+        background-position: 100% 100%;
+      }
+    }
+
+    body::before {
+      position: fixed;
+      inset: -15vmax -10vmax auto auto;
+      width: 45vmax;
+      height: 45vmax;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 246, 200, 0.8),
+        transparent 65%
+      );
+      content: "";
+      pointer-events: none;
+    }
+
+    .submit {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 16px;
+      width: min(120%, 420px);
+      padding: 38px 32px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 28px;
+      background: var(--paper);
+      box-shadow:
+        0 30px 60px rgba(70, 30, 90, 0.25),
+        0 2px 0 rgba(255, 255, 255, 0.8) inset;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: card-rise 700ms cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+    }
+
+    .submit::before {
+      margin-bottom: 4px;
+      color: var(--ink);
+      content: "Login";
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      display: flex;
+      justify-content: center;
+    }
+
+    @keyframes card-rise {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .submit button {
+      min-height: 54px;
+      margin-top: 4px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff8a5b, #ff5d8f);
+      cursor: pointer;
+      font: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .submit button:hover {
+      transform: translateY(-2px);
+    }
+
+    .email,
+    .password {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 17px;
+      border: 2px solid transparent;
+      border-radius: 15px;
+      outline: none;
+      color: var(--ink);
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(70, 30, 90, 0.08);
+      font: inherit;
+      font-size: 1rem;
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      .submit {
+        width: 100%;
+        max-width: 420px;
+        gap: 14px;
+        padding: 32px 24px 24px;
+        border-radius: 24px;
+      }
+
+      .submit::before {
+        font-size: 1.7rem;
+      }
+      .email,
+      .password,
+      .submit button {
+        min-height: 50px;
+      }
+    }
+    @media (max-width: 380px) {
+      body {
+        padding: 12px;
+      }
+
+      .submit {
+        padding: 28px 18px 20px;
+      }
+    }
+  </style>
+
+  <body>
+    <form class="submit">
+      <input type="email" class="email" placeholder="Entear a email" />
+      <input type="password" class="password" placeholder="Entear a password" />
+      <button type="submit">Login</button>
+      <p>Don `t have an account? <a href="./signup.html">Sign up</a></p>
+    </form>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBRgEtgwG4KskDcPxtI_l556wn0H7OvmvA",
+        authDomain: "todo-list-8add1.firebaseapp.com",
+        projectId: "todo-list-8add1",
+        storageBucket: "todo-list-8add1.firebasestorage.app",
+        messagingSenderId: "470034352716",
+        appId: "1:470034352716:web:82e011c2dbd0b4e1e502e9",
+        measurementId: "G-4HNMXN9HBC",
+      };
+
+      // Initialize Firebase
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      const submit = document.querySelector(".submit");
+      submit.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input_email = document.querySelector(".email").value;
+        const input_password = document.querySelector(".password").value;
+        console.log(input_email, input_password);
+
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, input_email, input_password)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            window.location.href = "./todolist.html";
+            alert("login successfuly");
+            // ...
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert("Erorr");
+          });
+      });
+    </script>
+  </body>
+</html>

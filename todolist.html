@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Todo App</title>
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+  </head>
+  <body>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap");
+
+      :root {
+        --ink: #2b2350;
+        --ink-dim: #7a7299;
+        --paper: rgba(255, 255, 255, 0.82);
+        --line: rgba(43, 35, 80, 0.1);
+        --sun: #ff8a5b;
+        --rose: #ff5d8f;
+        --violet: #7b61ff;
+        --mint: #2ec4a6;
+        --font:
+          "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 9vh 16px 48px;
+        font-family: var(--font);
+        color: var(--ink);
+        background: linear-gradient(
+          160deg,
+          #ffd9a8,
+          #ff9e7d 30%,
+          #ff6f9c 60%,
+          #8b6bff
+        );
+        background-size: 250% 250%;
+        animation: skyShift 20s ease-in-out infinite alternate;
+        overflow-x: hidden;
+      }
+
+      @keyframes skyShift {
+        0% {
+          background-position: 0% 0%;
+        }
+        100% {
+          background-position: 100% 100%;
+        }
+      }
+
+      /* Soft sun glow that breathes behind the card */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -15vmax;
+        right: -10vmax;
+        width: 45vmax;
+        height: 45vmax;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 246, 200, 0.85),
+          rgba(255, 246, 200, 0) 65%
+        );
+        pointer-events: none;
+        animation: sunBreath 8s ease-in-out infinite alternate;
+      }
+
+      @keyframes sunBreath {
+        from {
+          transform: scale(0.92);
+          opacity: 0.75;
+        }
+        to {
+          transform: scale(1.08);
+          opacity: 1;
+        }
+      }
+
+      /* Background image: hills, sun and drifting clouds pinned to the bottom */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: url("background-sunrise.svg") center bottom / cover
+          no-repeat;
+      }
+
+      /* ---------- Card ---------- */
+      .container {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 460px;
+        padding: 34px 28px 28px;
+        background: var(--paper);
+        border-radius: 28px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow:
+          0 30px 60px rgba(70, 30, 90, 0.25),
+          0 2px 0 rgba(255, 255, 255, 0.8) inset;
+        animation: cardRise 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+      }
+
+      @keyframes cardRise {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      h1 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      h1 a {
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: var(--violet);
+        text-decoration: none;
+      }
+
+      h1 a:hover {
+        color: var(--rose);
+        text-decoration: underline;
+      }
+      /* ---------- Form ---------- */
+      #form {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 22px;
+      }
+
+      #input {
+        flex: 1;
+        min-width: 0;
+        height: 50px;
+        padding: 0 20px;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--ink);
+        background: #fff;
+        border: 2px solid transparent;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(70, 30, 90, 0.08);
+        outline: none;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s;
+      }
+
+      #input::placeholder {
+        color: var(--ink-dim);
+      }
+
+      #input:focus {
+        border-color: var(--rose);
+        box-shadow: 0 0 0 5px rgba(255, 93, 143, 0.18);
+      }
+
+      /* ---------- Add (+) button ---------- */
+      .add-btn,
+      #form button {
+        flex: none;
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        border: none;
+        border-radius: 16px;
+        font-family: var(--font);
+        font-size: 1.5rem;
+        font-weight: 300;
+        line-height: 1;
+        color: #fff;
+        background: linear-gradient(135deg, var(--sun), var(--rose));
+        cursor: pointer;
+        animation: pulse 2.4s ease-out infinite;
+        transition: transform 0.2s;
+      }
+
+      .add-btn:hover,
+      #form button:hover {
+        animation-play-state: paused;
+        transform: translateY(-2px) rotate(90deg);
+      }
+
+      .add-btn:active,
+      #form button:active {
+        transform: scale(0.92);
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 93, 143, 0.55);
+        }
+        70% {
+          box-shadow: 0 0 0 16px rgba(255, 93, 143, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 93, 143, 0);
+        }
+      }
+
+      /* ---------- List ---------- */
+      #list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      #list:empty::before {
+        content: "Nothing planned yet. Add your first task above.";
+        display: block;
+        padding: 22px 12px;
+        text-align: center;
+        font-size: 0.95rem;
+        color: var(--ink-dim);
+      }
+
+      #list li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 12px 13px 14px;
+        font-size: 1rem;
+        line-height: 1.4;
+        word-break: break-word;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 3px 10px rgba(70, 30, 90, 0.07);
+        cursor: pointer;
+        user-select: none;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          opacity 0.25s;
+      }
+
+      #list li:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(70, 30, 90, 0.14);
+      }
+
+      /* Round check marker, drawn in CSS so no HTML change is needed */
+      #list li::before {
+        content: "";
+        flex: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--violet);
+        border-radius: 50%;
+        background: transparent;
+      }
+
+      /* Push the delete button to the far right */
+      #list li button {
+        margin-left: auto;
+      }
+
+      /* Completed task */
+      #list li.done {
+        opacity: 0.6;
+        color: var(--ink-dim);
+        text-decoration: line-through;
+        text-decoration-color: var(--rose);
+        text-decoration-thickness: 2px;
+      }
+
+      #list li.done::before {
+        border-color: var(--mint);
+        background:
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E")
+            center / 70% no-repeat,
+          var(--mint);
+      }
+
+      /* Newly added task: one warm glow */
+      #list li.pulse {
+        animation: taskPulse 1s ease-out;
+      }
+
+      @keyframes taskPulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 138, 91, 0.6);
+          transform: scale(1.04);
+        }
+        100% {
+          box-shadow: 0 0 0 16px rgba(255, 138, 91, 0);
+          transform: scale(1);
+        }
+      }
+
+      /* ---------- Delete button ---------- */
+      #list li button,
+      .del-btn {
+        flex: none;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        font-family: var(--font);
+        font-size: 0.8rem;
+        color: var(--ink-dim);
+        background: rgba(43, 35, 80, 0.06);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          color 0.2s,
+          background 0.2s,
+          transform 0.2s;
+      }
+
+      #list li button:hover,
+      .del-btn:hover {
+        color: #fff;
+        background: var(--rose);
+        transform: rotate(90deg);
+      }
+
+      /* ---------- Accessibility ---------- */
+      button:focus-visible,
+      #input:focus-visible {
+        outline: 3px solid var(--violet);
+        outline-offset: 3px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      /* ---------- Small screens ---------- */
+      @media (max-width: 480px) {
+        body {
+          padding-top: 5vh;
+        }
+
+        .container {
+          padding: 26px 18px 20px;
+          border-radius: 22px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+      }
+      /* ---------- Tablet ---------- */
+      @media (min-width: 481px) and (max-width: 900px) {
+        body {
+          padding: 7vh 24px 40px;
+        }
+
+        .container {
+          max-width: 520px;
+          padding: 32px 30px 26px;
+        }
+      }
+
+      /* ---------- Small phones ---------- */
+      @media (max-width: 380px) {
+        body {
+          padding: 4vh 12px 28px;
+        }
+
+        .container {
+          padding: 22px 16px 18px;
+          border-radius: 20px;
+        }
+
+        #form {
+          gap: 8px;
+        }
+
+        #input {
+          height: 46px;
+          padding: 0 14px;
+          font-size: 0.95rem;
+        }
+
+        .add-btn,
+        #form button {
+          width: 46px;
+          height: 46px;
+        }
+
+        #list li {
+          gap: 10px;
+          padding: 11px 10px;
+          font-size: 0.95rem;
+        }
+      }
+
+      /* ---------- Short screens / landscape phones ---------- */
+      @media (max-height: 600px) and (max-width: 900px) {
+        body {
+          padding-top: 20px;
+          padding-bottom: 24px;
+        }
+      }
+    </style>
+
+    <div class="container">
+      <h1>Todo List <a href="./login.html">↪ Sign out</a></h1>
+
+      <form id="form">
+        <input type="text" id="input" placeholder="Enter task" required />
+        <button>Add</button>
+      </form>
+
+      <ul id="list"></ul>
+    </div>
+
+    <script>
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const list = document.getElementById("list");
+      let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+      // render
+      function showTodos() {
+        list.innerHTML = "";
+
+        todos.forEach((t, i) => {
+          const li = document.createElement("li");
+
+          li.textContent = t.text;
+          li.classList.toggle("done", t.done);
+
+          li.addEventListener("click", (e) => {
+            todos[i].done = !todos[i].done;
+            save();
+            showTodos();
+          });
+
+          const del = document.createElement("button");
+          del.textContent = "X";
+
+          del.onclick = (e) => {
+            e.stopPropagation();
+            todos.splice(i, 1);
+            save();
+            showTodos();
+          };
+
+          li.appendChild(del);
+          list.appendChild(li);
+        });
+      }
+
+      // save
+      function save() {
+        localStorage.setItem("todos", JSON.stringify(todos));
+      }
+
+      // add
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        todos.push({
+          text: input.value,
+          done: false,
+        });
+
+        save();
+        showTodos();
+        input.value = "";
+      });
+
+      // load
+      showTodos();
+    </script>
+  </body>
+</html>
